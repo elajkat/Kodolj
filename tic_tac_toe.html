@@ -17,6 +17,7 @@
                 height: 30px;
                 width: 30px;
                 float: left;
+                text-align: center;
             }
             .sor {
                 clear: both;
@@ -48,7 +49,6 @@
             function hely(doboz) {
                 if(doboz.innerText != "" || gyozelem) return;
                 doboz.innerText = aktualisJatekos;
-                
                 aktualisJatekos == "O" ? aktualisJatekos = "X" : aktualisJatekos = "O";                
                 aktualisJatekos == "O" ? aktualisSzin = "blue" : aktualisSzin = "red";
                 doboz.style.color = aktualisSzin;
