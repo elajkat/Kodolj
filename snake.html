@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Canvas</title>
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width=1024 height=1024></canvas> <br/>
+        <script>
+	    var jatek = {
+		tabla: [
+                    "###############",
+                    "#             #",
+                    "#             #",
+                    "#             #",
+                    "#    ####     #",
+                    "#    ####     #",
+                    "#             #",
+                    "#             #",
+                    "#             #",
+                    "###############"
+                ]
+	    };
+	    var grafika = {
+            	canvas: document.getElementById("canvas"),
+            	negyzetMeret: 30,
+		tablaMegrajzolas: function() {
+		    var ctx = grafika.canvas.getContext("2d");
+		    aktualisYOffset = 0;
+		    jatek.tabla.forEach(function sorEllenorzes(sor) {
+                        sor = sor.split("");
+                        var aktualisXOffset = 0;
+                	sor.forEach(function karakterEllenorzes(karakter) {
+                    	    if(karakter == "#") {
+                                ctx.fillStyle = "black";
+                                ctx.fillRect(aktualisXOffset, aktualisYOffset, grafika.negyzetMeret, grafika.negyzetMeret);
+                            }
+                     	    aktualisXOffset += grafika.negyzetMeret;
+                        });
+                    aktualisYOffset += grafika.negyzetMeret;
+            	    }); 
+		}
+	    };
+	    grafika.tablaMegrajzolas();
+        </script>
+    </body>
+</html>
