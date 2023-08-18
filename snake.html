@@ -126,11 +126,15 @@
                     aktualisYOffset += grafika.negyzetMeret;
                 });
 		    },
-           megRajzolas: function(ctx, megRajzolando, color) {
-                megRajzolando.forEach(function(resz) {
+           megRajzolas: function(ctx, megRajzolando, color1, color2) {
+                megRajzolando.forEach(function(resz, index) {
                     var reszXHelye = resz.x * grafika.negyzetMeret;
                     var reszYHelye = resz.y * grafika.negyzetMeret;
-                    ctx.fillStyle = color;
+                    newColor = color1
+                    if(megRajzolando.length > 1 && index == 0) {
+                        newColor = color2;
+                    }
+                    ctx.fillStyle = newColor;
                     ctx.fillRect(reszXHelye, reszYHelye, grafika.negyzetMeret, grafika.negyzetMeret);
 
                 });
@@ -139,8 +143,8 @@
                 var ctx = grafika.canvas.getContext("2d");
                 ctx.clearRect(0, 0, grafika.canvas.width, grafika.canvas.height);
                 grafika.tablaMegRajzolas(ctx);
-                grafika.megRajzolas(ctx, jatek.gyumolcs, "red");
-                grafika.megRajzolas(ctx, kigyo.reszek, "green");
+                grafika.megRajzolas(ctx, jatek.gyumolcs, "red", "red");
+                grafika.megRajzolas(ctx, kigyo.reszek, "green", "blue");
             }
 
 	    };
