@@ -1,0 +1,100 @@
+ <!DOCTYPE html>                                                                           
+  <html>         
+      <head>     
+          <title>Pong</title>
+          <style>     
+                 
+          </style>
+      </head>         
+      <body>          
+         <canvas id="canvas" width=640 height=480></canvas> <br/>
+         <script>
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            function uto(x, y, szelesseg, magassag) {
+                this.x = x;
+                this.y = y;
+                this.szelesseg = szelesseg;
+                this.magassag = magassag;
+                this.utkozottValamivel = function(labda) {
+                    var utoBalOldala = this.x;
+                    var utoFelsoOldala = this.y;
+                    var utoJobbOldala = this.x + this.szelesseg;
+                    var utoAlsoOldala = this.y + this.magassag;
+                    if(labda.x > utoBalOldala 
+                       && labda.x < utoJobbOldala
+                       && labda.y > utoFelsoOldala
+                       && labda.y < utoAlsoOldala) {
+                        return true;
+                    }
+                    return false;
+                };
+                this.mozgatas = function(keyCode) {
+                    var kovetkezoY = this.y;
+                    if(keyCode == 40) {
+                        kovetkezoY += 5;
+                    } else if(keyCode == 38) {
+                        kovetkezoY -= 5;
+                    }
+                    kovetkezoY = kovetkezoY < 0 ? 0: kovetkezoY;
+                    kovetkezoY = kovetkezoY + this.magassag > 480 ? 480 - this.magassag : kovetkezoY;
+                    this.y = kovetkezoY;
+                };
+            }
+            var jatekos = new uto(5, 200, 25, 100);
+            var ai = new uto(610, 200, 25, 100);
+            var labda = {
+                x: 320, y: 240, radius: 3, xSeb: 2, ySeb: 0,
+                reverseX: function() {
+                    this.xSeb *= -1;
+                },
+                reverseY: function() {
+                    this.ySeb *= -1;
+                },
+            };
+
+            function tick() {
+                jatekFrissites();
+                megRajzolas();
+
+                window.setTimeout("tick()", 1000/60);              
+            }
+            function jatekFrissites() {
+                labda.x += labda.xSeb;
+                labda.y += labda.ySeb;
+                var jatekossalUtkozott = jatekos.utkozottValamivel(labda);
+                var geppelUtkozott = ai.utkozottValamivel(labda);
+                if(jatekossalUtkozott || geppelUtkozott) {
+                    labda.reverseX();
+                }
+                for(var keyCode in lenyomottBillentyu) {
+                    jatekos.mozgatas(keyCode);
+                }
+            }
+            function megRajzolas() {
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 640, 480);
+                utoMegjelenites(jatekos);
+                utoMegjelenites(ai);
+               labdaMegjelenites(labda);
+            }
+            function utoMegjelenites(uto) {
+                ctx.fillStyle = "white";
+                ctx.fillRect(uto.x, uto.y, uto.szelesseg, uto.magassag);
+            }
+            function labdaMegjelenites(labda) {
+                ctx.beginPath();
+                ctx.arc(labda.x, labda.y, labda.radius, 0, 2 * Math.PI, false);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+            var lenyomottBillentyu = {};
+            window.addEventListener("keydown", function(keyInfo) 
+                {lenyomottBillentyu[event.keyCode] = true; }, false);
+            window.addEventListener("keyup", function(keyInfo) 
+                {delete lenyomottBillentyu[event.keyCode]; }, false);
+
+            tick();
+         </script>
+      </body>
+</html>  
