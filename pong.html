@@ -9,6 +9,8 @@
       <body>          
          <canvas id="canvas" width=640 height=480></canvas> <br/>
          <script>
+            var HEIGHT = 480;
+            var WIDTH = 640;
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
             function uto(x, y, szelesseg, magassag) {
@@ -16,6 +18,7 @@
                 this.y = y;
                 this.szelesseg = szelesseg;
                 this.magassag = magassag;
+                this.sebessegModositas = 0;
                 this.utkozottValamivel = function(labda) {
                     var utoBalOldala = this.x;
                     var utoFelsoOldala = this.y;
@@ -33,11 +36,15 @@
                     var kovetkezoY = this.y;
                     if(keyCode == 40) {
                         kovetkezoY += 5;
+                        this.sebessegModositas = 1.5;
                     } else if(keyCode == 38) {
                         kovetkezoY -= 5;
+                        this.sebessegModositas = 1.5;
+                    } else {
+                        this.sebessegModositas = 0;
                     }
                     kovetkezoY = kovetkezoY < 0 ? 0: kovetkezoY;
-                    kovetkezoY = kovetkezoY + this.magassag > 480 ? 480 - this.magassag : kovetkezoY;
+                    kovetkezoY = kovetkezoY + this.magassag > HEIGHT ? HEIGHT - this.magassag : kovetkezoY;
                     this.y = kovetkezoY;
                 };
             }
@@ -51,6 +58,25 @@
                 reverseY: function() {
                     this.ySeb *= -1;
                 },
+                ujraInditas: function() {
+                    this.x = 320;
+                    this.y = 240;
+                    this.xSeb = 2;
+                    this.ySeb = 0;
+                },
+                pattogas: function() {
+                    return labda.ySeb != 0;          
+                },
+                xSebessegModositas: function(modositas) {
+                    modositas = this.xSeb < 0 ? modositas * -1 : modositas;
+                    var kovetkezoErtek = this.xSeb + modositas;
+                    kovetkezoErtek = Math.abs(kovetkezoErtek) > 9 ? 9 : kovetkezoErtek;
+                    this.xSeb = kovetkezoErtek;
+                },
+                ySebessegModositas: function(modositas) {
+                    modositas = this.ySeb < 0 ? modositas * -1 : modositas;
+                    this.ySeb += modositas;
+                },
             };
 
             function tick() {
@@ -62,18 +88,34 @@
             function jatekFrissites() {
                 labda.x += labda.xSeb;
                 labda.y += labda.ySeb;
+                if(labda.x < 0 || labda.x > WIDTH) {
+                    labda.ujraInditas();
+                }
+                if(labda.y <= 0 || labda.y >= HEIGHT) {
+                    labda.reverseY();
+                }
                 var jatekossalUtkozott = jatekos.utkozottValamivel(labda);
                 var geppelUtkozott = ai.utkozottValamivel(labda);
                 if(jatekossalUtkozott || geppelUtkozott) {
                     labda.reverseX();
+                    labda.xSebessegModositas(0.25);
+                    var sebessegGyorsitas = jatekossalUtkozott ? jatekos.sebessegModositas : ai.sebessegModositas
+                    labda.ySebessegModositas(sebessegGyorsitas);
                 }
                 for(var keyCode in lenyomottBillentyu) {
                     jatekos.mozgatas(keyCode);
                 }
+                var aiKozepe = ai.y + (ai.magassag / 2);
+                if(aiKozepe < labda.y) {
+                    ai.mozgatas(40);
+                }
+                if(aiKozepe > labda.y) {
+                    ai.mozgatas(38);
+                }
             }
             function megRajzolas() {
                 ctx.fillStyle = "black";
-                ctx.fillRect(0, 0, 640, 480);
+                ctx.fillRect(0, 0, WIDTH, HEIGHT);
                 utoMegjelenites(jatekos);
                 utoMegjelenites(ai);
                labdaMegjelenites(labda);
