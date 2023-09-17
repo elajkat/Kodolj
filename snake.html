@@ -8,12 +8,14 @@
     </head>
     <body>
         <canvas id="canvas" width=1024 height=1024></canvas> <br/>
+
         <script>
 	    var jatek = {
             tickSzama: 0,
             idozito: null,
             pontSzam: 0,
-            tabla: [
+            tabla: [],
+            tabla1: [
                         "###############",
                         "#             #",
                         "#             #",
@@ -25,6 +27,31 @@
                         "#             #",
                         "###############"
                     ],
+            tabla2: [
+                        "###############",
+                        "#             #",
+                        "#    ##       #",
+                        "#             #",
+                        "#    ###      #",
+                        "#     ###     #",
+                        "#             #",
+                        "#      ##     #",
+                        "#             #",
+                        "###############"
+                    ],
+            tabla3: [
+                        "###############",
+                        "#             #",
+                        "#   #     #   #",
+                        "# #           #",
+                        "#    #  #     #",
+                        "#    #  #  #  #",
+                        "#             #",
+                        "#    #    #   #",
+                        "#             #",
+                        "###############"
+                    ],
+            tablak: [],
             gyumolcs: [
                 {x: 1, y: 1}
             ],
@@ -111,9 +138,9 @@
 	    var grafika = {
             canvas: document.getElementById("canvas"),
             negyzetMeret: 30,
-		    tablaMegRajzolas: function(ctx) {
+		    tablaMegRajzolas: function(ctx, tablaSzam) {
 		        aktualisYOffset = 0;
-		        jatek.tabla.forEach(function sorEllenorzes(sor) {
+                jatek.tabla.forEach(function sorEllenorzes(sor) {
                     sor = sor.split("");
                     var aktualisXOffset = 0;
                     sor.forEach(function karakterEllenorzes(karakter) {
@@ -125,6 +152,8 @@
                     });
                     aktualisYOffset += grafika.negyzetMeret;
                 });
+                ctx.fillStyle = "green";
+                ctx.fillText("Pontszam: " + jatek.pontSzam, Math.floor(grafika.canvas.width / 2), 20);
 		    },
            megRajzolas: function(ctx, megRajzolando, color1, color2) {
                 megRajzolando.forEach(function(resz, index) {
@@ -141,7 +170,16 @@
             },
             jatekMegRajzolas: function() {
                 var ctx = grafika.canvas.getContext("2d");
+                ctx.font = "18px Bold Arial";
                 ctx.clearRect(0, 0, grafika.canvas.width, grafika.canvas.height);
+
+                jatek.tablak.push(jatek.tabla1);
+                jatek.tablak.push(jatek.tabla2);
+                jatek.tablak.push(jatek.tabla3);
+                palyaSzam = Math.floor(jatek.pontSzam / 2);
+                palyaSzam = (palyaSzam > 3) ? 0 : palyaSzam
+                jatek.tabla = jatek.tablak[palyaSzam];
+
                 grafika.tablaMegRajzolas(ctx);
                 grafika.megRajzolas(ctx, jatek.gyumolcs, "red", "red");
                 grafika.megRajzolas(ctx, kigyo.reszek, "green", "blue");
