@@ -20,6 +20,7 @@
                 this.szelesseg = szelesseg;
                 this.magassag = magassag;
                 this.sebessegModositas = 0;
+                this.pontSzam = 0;
                 this.utkozottValamivel = function(labda) {
                     var utoBalOldala = this.x;
                     var utoFelsoOldala = this.y;
@@ -29,8 +30,8 @@
                        && labda.x < utoJobbOldala
                        && labda.y > utoFelsoOldala
                        && labda.y < utoAlsoOldala) {
-                        return true;
-                    }
+                         return true;
+                       }
                     return false;
                 };
                 this.mozgatas = function(keyCode) {
@@ -70,13 +71,15 @@
                 },
                 xSebessegModositas: function(modositas) {
                     modositas = this.xSeb < 0 ? modositas * -1 : modositas;
+                    veletlenModosito = Math.floor(Math.random() * 4) - 2;
                     var kovetkezoErtek = this.xSeb + modositas;
                     kovetkezoErtek = Math.abs(kovetkezoErtek) > 9 ? 9 : kovetkezoErtek;
                     this.xSeb = kovetkezoErtek;
                 },
                 ySebessegModositas: function(modositas) {
                     modositas = this.ySeb < 0 ? modositas * -1 : modositas;
-                    this.ySeb += modositas;
+                    veletlenModosito = Math.floor(Math.random() * 10) - 5;
+                    this.ySeb += modositas + veletlenModosito;
                 },
             };
 
@@ -90,6 +93,11 @@
                 labda.x += labda.xSeb;
                 labda.y += labda.ySeb;
                 if(labda.x < 0 || labda.x > WIDTH) {
+                    if(labda.x < 0) {
+                        ai.pontSzam += 1;
+                    } else {
+                        jatekos.pontSzam += 1;
+                    }
                     labda.ujraInditas();
                 }
                 if(labda.y <= 0 || labda.y >= HEIGHT) {
@@ -117,9 +125,16 @@
             function megRajzolas() {
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+                ctx.font = "18px Bold Arial";
+                ctx.fillStyle = "green";
+                ctx.fillText("Bal Oldali jatekos: " + jatekos.pontSzam, Math.floor(WIDTH / 2), 15);
+                ctx.fillStyle = "red";
+                ctx.fillText("Jobb Oldali jatekos: " + ai.pontSzam, Math.floor(WIDTH / 2), 35);
+
                 utoMegjelenites(jatekos);
                 utoMegjelenites(ai);
-               labdaMegjelenites(labda);
+                labdaMegjelenites(labda);
             }
             function utoMegjelenites(uto) {
                 ctx.fillStyle = uto.szin;
