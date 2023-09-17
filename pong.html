@@ -13,9 +13,10 @@
             var WIDTH = 640;
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
-            function uto(x, y, szelesseg, magassag) {
+            function uto(x, y, szelesseg, magassag, szin) {
                 this.x = x;
                 this.y = y;
+                this.szin = szin;
                 this.szelesseg = szelesseg;
                 this.magassag = magassag;
                 this.sebessegModositas = 0;
@@ -48,10 +49,10 @@
                     this.y = kovetkezoY;
                 };
             }
-            var jatekos = new uto(5, 200, 25, 100);
-            var ai = new uto(610, 200, 25, 100);
+            var jatekos = new uto(5, 200, 25, 100, "green");
+            var ai = new uto(610, 200, 25, 100, "red");
             var labda = {
-                x: 320, y: 240, radius: 3, xSeb: 2, ySeb: 0,
+                x: 320, y: 240, radius: 4, xSeb: 2, ySeb: 0,
                 reverseX: function() {
                     this.xSeb *= -1;
                 },
@@ -121,13 +122,13 @@
                labdaMegjelenites(labda);
             }
             function utoMegjelenites(uto) {
-                ctx.fillStyle = "white";
+                ctx.fillStyle = uto.szin;
                 ctx.fillRect(uto.x, uto.y, uto.szelesseg, uto.magassag);
             }
             function labdaMegjelenites(labda) {
                 ctx.beginPath();
                 ctx.arc(labda.x, labda.y, labda.radius, 0, 2 * Math.PI, false);
-                ctx.fillStyle = "white";
+                ctx.fillStyle = "blue";
                 ctx.fill();
             }
             var lenyomottBillentyu = {};
