@@ -12,6 +12,7 @@
             var HEIGHT = 480;
             var WIDTH = 640;
             var GRAVITY = 10;
+            var HIGHESTGROUND = 240;
 
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
@@ -24,9 +25,33 @@
                 magassag: HEIGHT,
                 szelesseg: WIDTH,
                 gravitacio: GRAVITY,
+                legmagasabbTalaj: HIGHESTGROUND,
+                sebesseg: 5,
+                megtettTav: 0,
+                autoScroll: true,
+                maxSebesseg: 15,
+                lefutottCsempek: 0,
                 talajCsempe: [
                     new talaj(0, 140)
                 ],
+                stop: function() {
+                    this.autoScroll = false;
+                },
+                talajMozgatas: function() {
+                    for(index in this.talajCsempe) {
+                        var csempe = this.talajCsempe[index];
+                        csempe.x -= this.sebesseg;
+                        this.megtettTav += this.sebesseg;
+                    }
+                },
+                tick: function() {
+                    if(!this.autoScroll) {
+                        return;
+                    }
+                    this.regiCsempekTorlese();
+                    this.ujCsempeHozzaadas();
+                    this.talajMozgatas();
+                },
                 megrajzolas: function() {
                     ctx.fillStyle = "black";
                     ctx.fillRect(0, 0, this.szelesseg, this.magassag);
@@ -36,12 +61,103 @@
                         ctx.fillStyle = "blue";
                         ctx.fillRect(csempe.x, y, csempe.szelesseg, csempe.magassag);
                     }
+                    ctx.fillStyle = "white";
+                    ctx.font = "28px Arial";
+                    ctx.fillText("Sebesseg: " + this.sebesseg, 10, 40);
+                    ctx.fillText("Megtett Ut: " + this.megtettTav, 10, 75);
+                },
+                ujCsempeHozzaadas: function() {
+                    if(this.talajCsempe.length >= 3) {
+                        return;
+                    }
+                    var elozoCsempe = this.talajCsempe[this.talajCsempe.length - 1];
+                    var legnagyobbUgrasMagassag = elozoCsempe.magassag + jatekos.magassag * 3.5;
+                    if(legnagyobbUgrasMagassag > this.legmagasabbTalaj) {
+                        legnagyobbUgrasMagassag = this.legmagasabbTalaj;
+                    }
+                    var randomMagassag = Math.floor(Math.random() * legnagyobbUgrasMagassag) + jatekos.magassag;
+                    var balErtek = (elozoCsempe.x + elozoCsempe.szelesseg);
+                    var kovetkezo = new talaj(balErtek, randomMagassag);
+                    this.talajCsempe.push(kovetkezo);
+                },
+                regiCsempekTorlese: function() {
+                    for(index in this.talajCsempe) {
+                        if(this.talajCsempe[index].x <= -this.talajCsempe[index].szelesseg) {
+                            this.talajCsempe.splice(index, 1);
+                            this.lefutottcsempek++;
+                            if(this.lefutottCsempek % 3 == 0 && this.sebesseg < this.maxSebesseg) {
+                                this.sebesseg++;
+                            }
+                        }
+                    }
+                },
+                talajTavMegadas: function(jatekosX) {
+                    for(index in this.talajCsempe) {
+                        var csempe = this.talajCsempe[index];
+                        if(csempe.x <= jatekosX && csempe.x + csempe.szelesseg >= jatekosX) {
+                            return csempe.magassag;
+                        }
+                    }
+                    return -1;
+                }
+            };
+            var jatekos = {
+                x: 160,
+                y: 340,
+                magassag: 20,
+                szelesseg: 20,
+                lehuzoEro: vilag.gravitacio,
+                ugrasMagassag: 0,
+                billentyuLenyomas: function(keyInfo) {
+                    var talajMagassag = vilag.talajTavMegadas(this.x); //this.szelesseg);
+                    var aPadlon = talajMagassag == (vilag.magassag - this.y);
+                    if(aPadlon) {
+                        this.lehuzoEro = -8;
+                    }
+                },
+                tavMegadas: function(x) {
+                    var lentiPlatform = vilag.talajTavMegadas(x);
+                    return vilag.magassag - this.y - lentiPlatform;
+                },
+                megrajzolas: function() {
+                    ctx.fillStyle = "green";
+                    ctx.fillRect(this.x, this.y - this.magassag, this.magassag, this.szelesseg);
+                },
+                gravitacioAlkalmazas: function() {
+                    this.aktualisTalajTav = this.tavMegadas(this.x);
+                    var jobbOldaliTav = this.tavMegadas(this.x + this.szelesseg);
+                    if(this.aktualisTalajTav < 0 || jobbOldaliTav < 0) {
+                        vilag.stop();
+                    }
+                },
+                gravitacioFeldolgozas: function() {
+                    this.y += this.lehuzoEro;
+                    var talajMagassaga = vilag.talajTavMegadas(this.x);// + this.szelesseg);
+                    var talajYMagassaga = vilag.magassag - talajMagassaga;
+                    if(this.y > talajYMagassaga) {
+                        this.y = talajYMagassaga;
+                    }
+                    if(this.lehuzoEro < 0) {
+                        this.ugrasMagassag += (this.lehuzoEro * -1);
+                        if(this.ugrasMagassag >= jatekos.magassag * 6) {
+                            this.lehuzoEro = vilag.gravitacio;
+                            this.ugrasMagassag = 0
+                        }
+                    }
+                },
+                tick: function() {
+                    this.gravitacioFeldolgozas();
+                    this.gravitacioAlkalmazas();
                 },
             };
             function tick() {
+                jatekos.tick();
+                vilag.tick();
                 vilag.megrajzolas();
+                jatekos.megrajzolas();
                 window.setTimeout("tick()", 1000/60);
             }
+            window.addEventListener("keypress", function(keyInfo) { jatekos.billentyuLenyomas(keyInfo) }, false);
             tick();
         </script>
     </body>
