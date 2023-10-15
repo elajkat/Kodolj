@@ -31,6 +31,7 @@
                 megtettTav: 0,
                 autoScroll: true,
                 maxSebesseg: 15,
+                maxCsempeRes: 150,
                 lefutottCsempek: 0,
                 talajCsempe: [
                     new talaj(0, 140)
@@ -60,7 +61,6 @@
                     for(index in this.talajCsempe) {
                         var csempe = this.talajCsempe[index];
                         var y = this.magassag - csempe.magassag;
-                        //color = colors[Math.floor(Math.random() * colors.length)];
                         ctx.fillStyle = this.talajCsempe[index].szin;
                         ctx.fillRect(csempe.x, y, csempe.szelesseg, csempe.magassag);
                     }
@@ -80,7 +80,9 @@
                         legnagyobbUgrasMagassag = this.legmagasabbTalaj;
                     }
                     var randomMagassag = Math.floor(Math.random() * legnagyobbUgrasMagassag) + jatekos.magassag;
-                    var balErtek = (elozoCsempe.x + elozoCsempe.szelesseg);
+                    var veletlenRes = Math.floor(Math.random() * this.maxCsempeRes);
+                    console.log(veletlenRes);
+                    var balErtek = (elozoCsempe.x + elozoCsempe.szelesseg + veletlenRes);
                     var csempeSzin = csempeSzinek[Math.floor(Math.random() * csempeSzinek.length)];
                     var kovetkezo = new talaj(balErtek, randomMagassag, csempeSzin);
                     this.talajCsempe.push(kovetkezo);
