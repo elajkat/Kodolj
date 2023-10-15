@@ -16,10 +16,11 @@
 
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
-            function talaj(x, magassag) {
+            function talaj(x, magassag, szin) {
                 this.x = x;
                 this.szelesseg =700;
                 this.magassag = magassag;
+                this.szin = szin;
             }
             var vilag = {
                 magassag: HEIGHT,
@@ -55,10 +56,12 @@
                 megrajzolas: function() {
                     ctx.fillStyle = "black";
                     ctx.fillRect(0, 0, this.szelesseg, this.magassag);
+                    colors = ["blue", "cyan", "DarkOliveGreen", "khaki"];
                     for(index in this.talajCsempe) {
                         var csempe = this.talajCsempe[index];
                         var y = this.magassag - csempe.magassag;
-                        ctx.fillStyle = "blue";
+                        //color = colors[Math.floor(Math.random() * colors.length)];
+                        ctx.fillStyle = this.talajCsempe[index].szin;
                         ctx.fillRect(csempe.x, y, csempe.szelesseg, csempe.magassag);
                     }
                     ctx.fillStyle = "white";
@@ -70,6 +73,7 @@
                     if(this.talajCsempe.length >= 3) {
                         return;
                     }
+                    var csempeSzinek = ["blue", "khaki", "cyan", "darkolivegreen", "snow", "springgreen"];
                     var elozoCsempe = this.talajCsempe[this.talajCsempe.length - 1];
                     var legnagyobbUgrasMagassag = elozoCsempe.magassag + jatekos.magassag * 3.5;
                     if(legnagyobbUgrasMagassag > this.legmagasabbTalaj) {
@@ -77,7 +81,8 @@
                     }
                     var randomMagassag = Math.floor(Math.random() * legnagyobbUgrasMagassag) + jatekos.magassag;
                     var balErtek = (elozoCsempe.x + elozoCsempe.szelesseg);
-                    var kovetkezo = new talaj(balErtek, randomMagassag);
+                    var csempeSzin = csempeSzinek[Math.floor(Math.random() * csempeSzinek.length)];
+                    var kovetkezo = new talaj(balErtek, randomMagassag, csempeSzin);
                     this.talajCsempe.push(kovetkezo);
                 },
                 regiCsempekTorlese: function() {
@@ -104,7 +109,7 @@
             var jatekos = {
                 x: 160,
                 y: 340,
-                magassag: 20,
+                magassag: 25,
                 szelesseg: 20,
                 lehuzoEro: vilag.gravitacio,
                 ugrasMagassag: 0,
@@ -121,7 +126,7 @@
                 },
                 megrajzolas: function() {
                     ctx.fillStyle = "green";
-                    ctx.fillRect(this.x, this.y - this.magassag, this.magassag, this.szelesseg);
+                    ctx.fillRect(this.x, this.y - this.magassag, this.szelesseg, this.magassag);
                 },
                 gravitacioAlkalmazas: function() {
                     this.aktualisTalajTav = this.tavMegadas(this.x);
